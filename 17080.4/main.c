@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]){
 		printf("Enter expression and hit Return(Enter) to end:\n\n>>> ");
 
 		char _expr[257];
-		scanf("%s[^\n]",_expr);
+		scanf("%257[^\n]",_expr);
 		fprintf(fp, "%s", _expr);
 		fclose(fp);
 		fp= fopen("_tmp.txt","r");
