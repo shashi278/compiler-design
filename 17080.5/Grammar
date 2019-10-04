@@ -1,0 +1,42 @@
+#left recursive grammar
+
+S: CE '$'
+CE: CE ',' AE | AE
+AE: id '=' AE | PE
+PE: PE '+' ME | ME
+ME: ME '*' BE | BE
+BE: '(' CE ')' | id | num | r
+id: CHARACTER
+num: NUMBER
+r: STDIN
+
+#Equivalent LL(1) grammar for the above grammar
+
+0	S 	: CE '$'			------------0
+1	CE 	: AE CE'		----------------1
+2	CE'	: ',' AE CE'	----------------2
+	CE'	: '~' 	(Epsilon)	------------3
+3	AE 	: id AE'	--------------------4
+	AE 	: PE		--------------------5
+4	AE'	: '=' AE 	--------------------6
+5	PE 	: ME PE'	--------------------7
+6	PE'	: '+' ME PE'	----------------8
+	PE'	: '~'		--------------------9
+7	ME 	: BE ME'	--------------------10
+8	ME'	: '*' BE ME'	----------------11
+	ME'	: '~'		--------------------12
+9	BE 	: '(' CE ')'	----------------13
+	BE	: id		--------------------14
+	BE	: num 		--------------------15
+	BE	: r 		--------------------16
+
+#FIRST 								#FOLLOW
+First(BE)= {'(',id, num, r}			Follow(BE)= {'*', +','$', ')', ','}
+First(ME')= {'*','~'}				Follow(ME')= {'+','$', ')', ','}
+First(ME)= {'(',id, num, r}			Follow(ME)= {'+','$', ')', ','}
+First(PE')= {'+', '~'}				Follow(PE')= {'$', ')', ','}
+First(PE)= {'(',id, num, r}			Follow(PE)= {'$', ')', ','}
+First(AE')= {'='}					Follow(AE')= {'$', ')', ','}
+First(AE)= {'(',id, num, r}			Follow(AE)= {'$', ')', ','}
+First(CE')= {',','~'}				Follow(CE')= {'$',')'}
+First(CE)= {'(',id, num, r}			Follow(CE)= {'$',')'}
