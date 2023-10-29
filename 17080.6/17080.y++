@@ -1,0 +1,119 @@
+
+%{
+#include<iostream>
+#include<string>
+#include<cstring>
+#include<sstream>
+using namespace std;
+
+int yylex (void);
+void yyerror(char const *s);
+extern int yylineno;
+
+extern char yytext[];
+#define YYDEBUG 1
+
+%}
+
+%union  {             
+  int integer ;                          
+  float real ;
+  char *str;
+}
+
+%token <integer> IC 
+%token <real> FC 
+%token <str> STRING ID
+%token INT WHILE DO IF THEN ELSE NOP PRINT REAL READ COMP/* tokens and types   */
+%left '&'
+%left '|'
+%left '-' '+'
+%left '*' '/'
+%left UNEG
+%left '~'           
+
+%start p
+
+
+%% /* Grammar rules and action follows   */
+
+p: dl sl
+;
+
+dl: dl d
+  |
+;
+
+
+d: vl ':' ty
+;
+
+ty: INT
+  | REAL
+;
+
+vl: vl ID
+  | ID
+;
+
+sl: sl s
+  | s
+;
+
+s: as
+  | is
+  | ls 
+  | ios 
+  | NOP
+;
+
+as: ID '=' exp
+;
+
+is: IF be THEN sl ELSE sl ';'
+;
+
+ls: WHILE be DO sl ';'
+;
+
+ios: PRINT pe
+  | READ ID
+;
+
+pe: exp 
+  | STRING
+;
+
+be: be '|' be 
+  | be '&' be
+  | '~' be 
+  | '('be')'
+  | re
+;
+
+re: exp COMP exp
+  | exp '<' exp
+  | exp '>' exp
+;
+
+exp: IC              
+   | FC   
+   | ID      
+   | exp '+' exp        
+   | exp '-' exp         
+   | exp '*' exp         
+   | exp '/' exp         
+   | '-' exp %prec UNEG
+   | '(' exp ')'         
+;
+
+%%
+int main() {
+  // yydebug = 1 ;
+	yyparse();
+}
+
+void yyerror(const char* s) {
+	fprintf(stderr, "%s at line no: %d\n", s, yylineno);
+	exit(1);
+}
