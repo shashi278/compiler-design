@@ -1,0 +1,235 @@
+Terminals unused in grammar
+
+   UNEG
+   UPOS
+
+
+Grammar
+
+    0 $accept: s $end
+
+    1 s: s line
+    2  | %empty
+
+    3 line: '\n'
+    4     | exp '\n'
+    5     | error '\n'
+
+    6 exp: INT
+    7    | FLOAT
+    8    | exp '+' exp
+    9    | exp '-' exp
+   10    | exp '*' exp
+   11    | exp '/' exp
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'\n' (10) 3 4 5
+'*' (42) 10
+'+' (43) 8
+'-' (45) 9
+'/' (47) 11
+error (256) 5
+INT <integer> (258) 6
+FLOAT <real> (259) 7
+UNEG (260)
+UPOS (261)
+
+
+Nonterminals, with rules where they appear
+
+$accept (12)
+    on left: 0
+s (13)
+    on left: 1 2, on right: 0 1
+line (14)
+    on left: 3 4 5, on right: 1
+exp <real> (15)
+    on left: 6 7 8 9 10 11, on right: 4 8 9 10 11
+
+
+State 0
+
+    0 $accept: . s $end
+
+    $default  reduce using rule 2 (s)
+
+    s  go to state 1
+
+
+State 1
+
+    0 $accept: s . $end
+    1 s: s . line
+
+    $end   shift, and go to state 2
+    error  shift, and go to state 3
+    INT    shift, and go to state 4
+    FLOAT  shift, and go to state 5
+    '\n'   shift, and go to state 6
+
+    line  go to state 7
+    exp   go to state 8
+
+
+State 2
+
+    0 $accept: s $end .
+
+    $default  accept
+
+
+State 3
+
+    5 line: error . '\n'
+
+    '\n'  shift, and go to state 9
+
+
+State 4
+
+    6 exp: INT .
+
+    $default  reduce using rule 6 (exp)
+
+
+State 5
+
+    7 exp: FLOAT .
+
+    $default  reduce using rule 7 (exp)
+
+
+State 6
+
+    3 line: '\n' .
+
+    $default  reduce using rule 3 (line)
+
+
+State 7
+
+    1 s: s line .
+
+    $default  reduce using rule 1 (s)
+
+
+State 8
+
+    4 line: exp . '\n'
+    8 exp: exp . '+' exp
+    9    | exp . '-' exp
+   10    | exp . '*' exp
+   11    | exp . '/' exp
+
+    '-'   shift, and go to state 10
+    '+'   shift, and go to state 11
+    '*'   shift, and go to state 12
+    '/'   shift, and go to state 13
+    '\n'  shift, and go to state 14
+
+
+State 9
+
+    5 line: error '\n' .
+
+    $default  reduce using rule 5 (line)
+
+
+State 10
+
+    9 exp: exp '-' . exp
+
+    INT    shift, and go to state 4
+    FLOAT  shift, and go to state 5
+
+    exp  go to state 15
+
+
+State 11
+
+    8 exp: exp '+' . exp
+
+    INT    shift, and go to state 4
+    FLOAT  shift, and go to state 5
+
+    exp  go to state 16
+
+
+State 12
+
+   10 exp: exp '*' . exp
+
+    INT    shift, and go to state 4
+    FLOAT  shift, and go to state 5
+
+    exp  go to state 17
+
+
+State 13
+
+   11 exp: exp '/' . exp
+
+    INT    shift, and go to state 4
+    FLOAT  shift, and go to state 5
+
+    exp  go to state 18
+
+
+State 14
+
+    4 line: exp '\n' .
+
+    $default  reduce using rule 4 (line)
+
+
+State 15
+
+    8 exp: exp . '+' exp
+    9    | exp . '-' exp
+    9    | exp '-' exp .
+   10    | exp . '*' exp
+   11    | exp . '/' exp
+
+    '*'  shift, and go to state 12
+    '/'  shift, and go to state 13
+
+    $default  reduce using rule 9 (exp)
+
+
+State 16
+
+    8 exp: exp . '+' exp
+    8    | exp '+' exp .
+    9    | exp . '-' exp
+   10    | exp . '*' exp
+   11    | exp . '/' exp
+
+    '*'  shift, and go to state 12
+    '/'  shift, and go to state 13
+
+    $default  reduce using rule 8 (exp)
+
+
+State 17
+
+    8 exp: exp . '+' exp
+    9    | exp . '-' exp
+   10    | exp . '*' exp
+   10    | exp '*' exp .
+   11    | exp . '/' exp
+
+    $default  reduce using rule 10 (exp)
+
+
+State 18
+
+    8 exp: exp . '+' exp
+    9    | exp . '-' exp
+   10    | exp . '*' exp
+   11    | exp . '/' exp
+   11    | exp '/' exp .
+
+    $default  reduce using rule 11 (exp)

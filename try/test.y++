@@ -1,0 +1,110 @@
+%{
+#include <stdio.h>
+
+int yylex(void);
+void yyerror(char *s);
+
+extern int yylineno;
+%}
+
+%union{
+    int integer;
+    float real;
+    char* str;
+}
+
+%token <integer> IC
+%token <real> FC
+%token <str> STRING ID
+%token IF ELSE THEN WHILE DO INT REAL PRINT READ COMP NOP
+%left '|'
+%left '&'
+%left '-' '+'
+%left '*' '/'
+%left UNEG
+%left UPOS
+%left '~'
+
+%start p
+
+%% /*Grammar rules and action followed*/
+
+P:  DL SL
+    ;
+
+DL: DL D
+    |
+    ;
+
+D:  VL ':' TY
+    ;
+
+TY: INT
+    | REAL
+    ;
+
+VL: VL ID
+    | ID
+    ;
+
+SL: SL S
+    | S
+    ;
+
+S:  AS
+    | IS
+    | LS
+    | IOS
+    | NOP
+    ;
+
+AS: ID '=' E
+    ;
+
+IS: IF BE THEN SL ELSE SL ';'
+    ;
+
+LS: WHILE BE DO SL ';'
+    ;
+
+IOS:    PRINT PE
+        | READ ID
+        ;
+
+PE: E
+    | STRING
+    ;
+
+BE: BE '|' BE
+    | BE '&' BE
+    | '~' BE
+    | '(' BE ')'
+    | RE
+    ;
+
+RE: E COMP E
+    | E '<' E
+    | E '>' E
+    ;
+
+E:  E '+' E
+    | E '-' E
+    | E '*' E 
+    | E '/' E
+    | '-' E %prec UNEG
+    | '(' E ')'
+    | ID
+    | IC
+    | FC
+    ;
+
+%%
+
+int main(){
+    return yyparse();
+}
+
+void yyerror(char *s){
+    printf("Error at line no. ",yylineno);
+    exit(1);
+}
